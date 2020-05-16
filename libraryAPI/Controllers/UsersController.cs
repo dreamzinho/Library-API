@@ -13,9 +13,9 @@ namespace libraryAPI.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
+        private IUserServices _userService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserServices userService)
         {
             _userService = userService;
         }
@@ -42,6 +42,7 @@ namespace libraryAPI.Controllers
             return Ok();
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult GetAll()
         {

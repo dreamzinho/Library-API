@@ -6,61 +6,59 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using libraryAPI.Entities;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using static libraryAPI.Services.BookServices;
+using libraryAPI.DTOs;
 using libraryAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace libraryAPI.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController : ControllerBase
+    public class AuthorsController : ControllerBase
     {
         private readonly LibraryDbContext _context;
-        private readonly IBookServices _bookServices;
+        private readonly AuthorServices _authorServices;
 
-        public BooksController(LibraryDbContext context, IBookServices bookServices)
+        public AuthorsController(LibraryDbContext context, AuthorServices authorServices)
         {
             _context = context;
-            _bookServices = bookServices;
+            _authorServices = authorServices;
         }
 
-        // GET: api/Books
-        [AllowAnonymous]
+        // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Authors.ToListAsync();
         }
 
-        // GET: api/Books/5
+        // GET: api/Authors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Author>> GetAuthor(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
 
-            if (book == null)
+            if (author == null)
             {
                 return NotFound();
             }
 
-            return book;
+            return author;
         }
 
-        // PUT: api/Books/5
+        // PUT: api/Authors/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutAuthor(int id, Author author)
         {
-            if (id != book.Id)
+            if (id != author.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            _context.Entry(author).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +66,7 @@ namespace libraryAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookExists(id))
+                if (!AuthorExists(id))
                 {
                     return NotFound();
                 }
@@ -81,38 +79,36 @@ namespace libraryAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Books
+        // POST: api/Authors
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Author>> PostAuthor(AuthorDTO author)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            var Id = await _authorServices.PostAuthor(author);
 
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
+            return CreatedAtAction("GetAuthor", new { id = Id }, author);
         }
 
-        // DELETE: api/Books/5
+        // DELETE: api/Authors/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Book>> DeleteBook(int id)
+        public async Task<ActionResult<Author>> DeleteAuthor(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            var author = await _context.Authors.FindAsync(id);
+            if (author == null)
             {
                 return NotFound();
             }
 
-            _context.Books.Remove(book);
+            _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
 
-            return book;
+            return author;
         }
 
-        private bool BookExists(int id)
+        private bool AuthorExists(int id)
         {
-            return _context.Books.Any(e => e.Id == id);
+            return _context.Authors.Any(e => e.Id == id);
         }
-
     }
 }

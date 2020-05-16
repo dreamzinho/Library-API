@@ -20,6 +20,7 @@ namespace libraryAPI.Entities
 
         public DbSet<User> User { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<libraryAPI.Entities.BookAuthor> BookAuthor { get; set; }
 
     }
 }

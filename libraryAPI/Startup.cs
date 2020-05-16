@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using libraryAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using static libraryAPI.Services.BookServices;
 
 namespace libraryAPI
 {
@@ -35,7 +36,10 @@ namespace libraryAPI
 
 
             // configure DI for application services
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IBookServices, BookServices>();
+            services.AddScoped<IAuthorServices, AuthorServices>();
+            services.AddScoped<IAuthorServices, AuthorServices>();
 
             services.AddCors();
             services.AddControllers();

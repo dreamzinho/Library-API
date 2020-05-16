@@ -11,12 +11,12 @@ namespace libraryAPI.Entities
         public int Id { get; set; }
         public string Title { get; set; }
         public int Year { get; set; }
-        public ICollection<Author> Authors { get; set; }
+        public ICollection<BookAuthor> Authors { get; set; }
         public bool IsAvailable { get; set; }
         public string WhoTookIt { get; set; }
         public Book()
         {
-            Authors = new Collection<Author>();
+            Authors = new Collection<BookAuthor>();
         }
     }
 }

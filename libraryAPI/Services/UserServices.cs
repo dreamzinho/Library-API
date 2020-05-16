@@ -14,20 +14,20 @@ using System.Threading.Tasks;
 
 namespace libraryAPI.Services
 {
-    public interface IUserService
+    public interface IUserServices
     {
         Task<User> Authenticate(string username, string password);
         void AddUser(RegisterModelDTO user);
         IEnumerable<User> GetAll();
     }
 
-    public class UserService : IUserService
+    public class UserServices : IUserServices
     {
         private readonly AppSettings _appSettings;
         private readonly UserManager<User> _userManager;
         
 
-        public UserService(IOptions<AppSettings> appSettings, UserManager<User> userManager)
+        public UserServices(IOptions<AppSettings> appSettings, UserManager<User> userManager)
         {
             _appSettings = appSettings.Value;
             _userManager = userManager;

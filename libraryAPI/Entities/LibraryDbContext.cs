@@ -20,7 +20,31 @@ namespace libraryAPI.Entities
 
         public DbSet<User> User { get; set; }
         public DbSet<Author> Authors { get; set; }
-        public DbSet<libraryAPI.Entities.BookAuthor> BookAuthor { get; set; }
+        public DbSet<BookAuthor> BookAuthor { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+            modelBuilder.Entity<BookAuthor>()
+                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
+            modelBuilder.Entity<BookAuthor>()
+                .HasOne(ba => ba.Book)
+                .WithMany(ba => ba.BookAuthors)
+                .HasForeignKey(ba => ba.BookId);
+            modelBuilder.Entity<BookAuthor>()
+                .HasOne(ba => ba.Author)
+                .WithMany(ba => ba.BookAuthors)
+                .HasForeignKey(ba => ba.AuthorId);
+
+
+
+
+
+
+            base.OnModelCreating(modelBuilder);
+        }
+
 
     }
 }

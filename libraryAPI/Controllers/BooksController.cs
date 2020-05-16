@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using static libraryAPI.Services.BookServices;
 using libraryAPI.Services;
+using libraryAPI.DTOs;
 
 namespace libraryAPI.Controllers
 {
@@ -85,12 +86,10 @@ namespace libraryAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public ActionResult<Book> PostBook(BookDTO book)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
+            var Id = _bookServices.PostBook(book);
+            return CreatedAtAction(nameof(GetBook), new { id = Id }, book);
         }
 
         // DELETE: api/Books/5

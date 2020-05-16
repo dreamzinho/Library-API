@@ -1,4 +1,5 @@
-﻿using libraryAPI.Entities;
+﻿using libraryAPI.DTOs;
+using libraryAPI.Entities;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace libraryAPI.Services
     public interface IBookServices
     {
         int BorrowBook(User currentUser, int id);
+        int PostBook(BookDTO book);
     }
     public class BookServices : IBookServices
     {
@@ -22,6 +24,32 @@ namespace libraryAPI.Services
             _context = context;
         }
 
+        public int PostBook(BookDTO book)
+        {
+            var newBook = new Book
+            {
+                Title = book.Title,
+                Year = book.Year,
+                WhoTookIt = book.WhoTookIt,
+                IsAvailable = book.IsAvailable
+            };
+            foreach (var a in book.Authors)
+            {
+                var ba = new BookAuthor
+                {
+                    //Author = _context.Authors.Single(a => a.Id == a.Id),
+                    AuthorId = a.Id,
+                    BookId = newBook.Id
+                };
+                newBook.BookAuthors.Add(ba);
+                _context.BookAuthor.Add(ba);
+            }
+
+            _context.Books.Add(newBook);
+            _context.SaveChanges();
+
+            return book.Id;
+        }
 
         public int BorrowBook(User currentUser, int id)
         {

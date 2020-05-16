@@ -27,6 +27,7 @@ namespace libraryAPI.Controllers
         }
 
         // GET: api/Authors
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {

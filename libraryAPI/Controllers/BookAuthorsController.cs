@@ -46,10 +46,10 @@ namespace libraryAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         //[Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBookAuthor(int id, BookAuthor bookAuthor)
+        [HttpPut("{bookId}/{authorId}")]
+        public async Task<IActionResult> PutBookAuthor(int bookId, int authorId, BookAuthor bookAuthor)
         {
-            if (id != bookAuthor.Id)
+            if (bookId != bookAuthor.BookId && authorId != bookAuthor.AuthorId)
             {
                 return BadRequest();
             }
@@ -62,7 +62,7 @@ namespace libraryAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookAuthorExists(id))
+                if (!BookAuthorExists(bookId, authorId))
                 {
                     return NotFound();
                 }
@@ -85,7 +85,7 @@ namespace libraryAPI.Controllers
             _context.BookAuthor.Add(bookAuthor);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBookAuthor", new { id = bookAuthor.Id }, bookAuthor);
+            return CreatedAtAction("GetBookAuthor", new { bookId = bookAuthor.BookId, authorId = bookAuthor.AuthorId }, bookAuthor);
         }
 
         // DELETE: api/BookAuthors/5
@@ -105,9 +105,9 @@ namespace libraryAPI.Controllers
             return bookAuthor;
         }
 
-        private bool BookAuthorExists(int id)
+        private bool BookAuthorExists(int bookId, int authorId)
         {
-            return _context.BookAuthor.Any(e => e.Id == id);
+            return _context.BookAuthor.Any(e => e.BookId == bookId && e.AuthorId == authorId);
         }
     }
 }

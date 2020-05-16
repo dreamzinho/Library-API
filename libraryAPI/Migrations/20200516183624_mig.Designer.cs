@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using libraryAPI.Entities;
 
 namespace libraryAPI.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200516183624_mig")]
+    partial class mig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,15 +267,22 @@ namespace libraryAPI.Migrations
 
             modelBuilder.Entity("libraryAPI.Entities.BookAuthor", b =>
                 {
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.HasKey("BookId", "AuthorId");
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("BookId");
 
                     b.ToTable("BookAuthor");
                 });
@@ -344,14 +353,14 @@ namespace libraryAPI.Migrations
 
             modelBuilder.Entity("libraryAPI.Entities.BookAuthor", b =>
                 {
-                    b.HasOne("libraryAPI.Entities.Author", "Author")
-                        .WithMany("BookAuthors")
+                    b.HasOne("libraryAPI.Entities.Author", null)
+                        .WithMany("books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("libraryAPI.Entities.Book", "Book")
-                        .WithMany("BookAuthors")
+                    b.HasOne("libraryAPI.Entities.Book", null)
+                        .WithMany("Authors")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

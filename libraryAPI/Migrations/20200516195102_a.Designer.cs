@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using libraryAPI.Entities;
 
 namespace libraryAPI.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200516195102_a")]
+    partial class a
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,6 +230,9 @@ namespace libraryAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -235,6 +240,8 @@ namespace libraryAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
 
                     b.ToTable("Authors");
                 });
@@ -265,13 +272,18 @@ namespace libraryAPI.Migrations
 
             modelBuilder.Entity("libraryAPI.Entities.BookAuthor", b =>
                 {
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.HasKey("BookId", "AuthorId");
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
@@ -342,17 +354,18 @@ namespace libraryAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("libraryAPI.Entities.Author", b =>
+                {
+                    b.HasOne("libraryAPI.Entities.Book", null)
+                        .WithMany("Authors")
+                        .HasForeignKey("BookId");
+                });
+
             modelBuilder.Entity("libraryAPI.Entities.BookAuthor", b =>
                 {
-                    b.HasOne("libraryAPI.Entities.Author", "Author")
-                        .WithMany("BookAuthors")
+                    b.HasOne("libraryAPI.Entities.Author", null)
+                        .WithMany("books")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("libraryAPI.Entities.Book", "Book")
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

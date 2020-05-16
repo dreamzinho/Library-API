@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace libraryAPI.DTOs
 {
-    public class Book
+    public class BookDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -15,7 +15,7 @@ namespace libraryAPI.DTOs
         public ICollection<Author> Authors { get; set; }
         public bool IsAvailable { get; set; }
         public string WhoTookIt { get; set; }
-        public Book()
+        public BookDTO()
         {
             Authors = new Collection<Author>();
         }

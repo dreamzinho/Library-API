@@ -28,8 +28,9 @@ namespace libraryAPI.Controllers
                 return BadRequest(new { message = "Username or password is incorrect" });
             return Ok(user);
         }
-
+        
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();

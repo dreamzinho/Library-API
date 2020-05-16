@@ -9,8 +9,6 @@ namespace libraryAPI.Entities
 {
     public class User : IdentityUser
     {
-        public string Username { get; set; }
-
         [JsonIgnore]
         public string Password { get; set; }
 

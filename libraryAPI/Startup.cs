@@ -7,7 +7,7 @@ using libraryAPI.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using libraryAPI.Models;
+using libraryAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
@@ -27,8 +27,16 @@ namespace libraryAPI
         {
             services.AddDbContext<LibraryDbContext>(opt =>
                opt.UseSqlServer(Configuration.GetConnectionString("SqlConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+
+
+
+            services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<LibraryDbContext>();
+
+
+            // configure DI for application services
+            services.AddScoped<IUserService, UserService>();
+
             services.AddCors();
             services.AddControllers();
 
@@ -57,14 +65,11 @@ namespace libraryAPI
                 };
             });
 
-            // configure DI for application services
-            services.AddScoped<IUserService, UserService>();
-
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "LibraryAPI", Version = "0.0.1" }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             app.UseCors(options => options.AllowAnyOrigin()
             .AllowAnyHeader().AllowAnyMethod());

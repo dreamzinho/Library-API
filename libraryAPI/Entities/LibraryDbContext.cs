@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using libraryAPI.Models;
+using libraryAPI.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
-namespace libraryAPI.Models
+namespace libraryAPI.Entities
 {
-    public class LibraryDbContext : IdentityDbContext
+    public class LibraryDbContext : IdentityDbContext<IdentityUser>
     {
         public LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             :base(options)
@@ -17,6 +18,8 @@ namespace libraryAPI.Models
 
         public DbSet<Book> Books { get; set; }
 
-        public DbSet<libraryAPI.Entities.User> User { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Author> Authors { get; set; }
+
     }
 }

@@ -8,35 +8,43 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using libraryAPI.Entities;
 using libraryAPI.Helpers;
+using Microsoft.AspNetCore.Identity;
+using libraryAPI.DTOs;
+using System.Threading.Tasks;
 
 namespace libraryAPI.Services
 {
     public interface IUserService
     {
-        User Authenticate(string username, string password);
-        void AddUser(User user);
+        Task<User> Authenticate(string username, string password);
+        void AddUser(RegisterModelDTO user);
         IEnumerable<User> GetAll();
     }
 
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
-        private readonly LibraryDbContext _context;
+        private readonly UserManager<User> _userManager;
+        
 
-        public UserService(IOptions<AppSettings> appSettings, LibraryDbContext context)
+        public UserService(IOptions<AppSettings> appSettings, UserManager<User> userManager)
         {
             _appSettings = appSettings.Value;
-            _context = context;
+            _userManager = userManager;
         }
 
-        public User Authenticate(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
-            var user = _context.User.FirstOrDefault(x => x.Username == username && x.Password == password);
-
+            var user = await _userManager.FindByNameAsync(username);
             // return null if user not found
             if (user == null)
                 return null;
 
+            var passwd = await _userManager.CheckPasswordAsync(user, password);
+            
+            if(passwd == false)
+                return null;
+            
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -51,21 +59,29 @@ namespace libraryAPI.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             user.Token = tokenHandler.WriteToken(token);
-
             return user;
         }
 
         public IEnumerable<User> GetAll()
         {
-            var _users = _context.User.ToList();
+            var _users = _userManager.Users.ToList();
             return _users;
         }
 
-        public void AddUser(User user)
+        public void AddUser(RegisterModelDTO registerModelDTO)
         {
-            _context.User.Add(user);
-            _context.SaveChanges();
+            var user = new User
+            {
+                UserName = registerModelDTO.UserName,
+                Email = registerModelDTO.Email,
+            };
 
+            IdentityResult result = _userManager.CreateAsync(user, registerModelDTO.Password).Result;
+
+            if (result.Succeeded)
+            {
+                _userManager.AddToRoleAsync(user, "User").Wait();
+            }
         }
     }
 }

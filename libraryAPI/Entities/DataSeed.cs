@@ -24,11 +24,11 @@ namespace libraryAPI.Entities
             }
         }
 
-        public static void SeedAdmin(UserManager<IdentityUser> userManager)
+        public static void SeedAdmin(UserManager<User> userManager)
         {
             if (userManager.FindByEmailAsync("admin").Result == null)
             {
-                IdentityUser adminUser = new IdentityUser();
+                User adminUser = new User();
                 adminUser.UserName = "admin@admin.pl";
                 adminUser.Email = "admin@admin.pl";
 

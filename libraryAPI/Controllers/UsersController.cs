@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using libraryAPI.Services;
 using libraryAPI.Entities;
 using System.Linq;
+using libraryAPI.DTOs;
+using System.Threading.Tasks;
 
 namespace libraryAPI.Controllers
 {
@@ -20,9 +22,9 @@ namespace libraryAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login([FromBody]AuthenticateModel model)
+        public async Task<IActionResult> Login([FromBody]LoginModelDTO model)
         {
-            var user = _userService.Authenticate(model.Username, model.Password);
+            var user = await _userService.Authenticate(model.UserName, model.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -31,12 +33,12 @@ namespace libraryAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody]AuthenticateModel model)
+        public IActionResult Register([FromBody]RegisterModelDTO model)
         {
-            _userService.AddUser(new User { Username = model.Username, Email = model.Email, Password = model.Password });
-
-            if (model.Email == null || model.Username == null || model.Password == null)
+            if (model.UserName == null || model.Email == null || model.Password == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
+            _userService.AddUser(model);
+            
             return Ok();
         }
 

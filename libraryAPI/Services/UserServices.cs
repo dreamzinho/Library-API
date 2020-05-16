@@ -14,29 +14,24 @@ namespace libraryAPI.Services
     public interface IUserService
     {
         User Authenticate(string username, string password);
+        void AddUser(User user);
         IEnumerable<User> GetAll();
     }
 
     public class UserService : IUserService
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        private List<User> _users = new List<User>
-        {
-            new User { Id = 0, FirstName = "Admin", LastName = "Admin", Username = "admin", Password = "admin123" }
-        };
-
-
-
         private readonly AppSettings _appSettings;
+        private readonly LibraryDbContext _context;
 
-        public UserService(IOptions<AppSettings> appSettings)
+        public UserService(IOptions<AppSettings> appSettings, LibraryDbContext context)
         {
             _appSettings = appSettings.Value;
+            _context = context;
         }
 
         public User Authenticate(string username, string password)
         {
-            var user = _users.SingleOrDefault(x => x.Username == username && x.Password == password);
+            var user = _context.User.FirstOrDefault(x => x.Username == username && x.Password == password);
 
             // return null if user not found
             if (user == null)
@@ -62,7 +57,15 @@ namespace libraryAPI.Services
 
         public IEnumerable<User> GetAll()
         {
+            var _users = _context.User.ToList();
             return _users;
+        }
+
+        public void AddUser(User user)
+        {
+            _context.User.Add(user);
+            _context.SaveChanges();
+
         }
     }
 }

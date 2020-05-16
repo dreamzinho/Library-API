@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using libraryAPI.Services;
-using libraryAPI.Models;
+using libraryAPI.Entities;
 using System.Linq;
 
 namespace libraryAPI.Controllers
@@ -19,14 +19,25 @@ namespace libraryAPI.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]AuthenticateModel model)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody]AuthenticateModel model)
         {
             var user = _userService.Authenticate(model.Username, model.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
             return Ok(user);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register([FromBody]AuthenticateModel model)
+        {
+            _userService.AddUser(new User { Username = model.Username, Email = model.Email, Password = model.Password });
+
+            if (model.Email == null || model.Username == null || model.Password == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+            return Ok();
         }
 
         [HttpGet]

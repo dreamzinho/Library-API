@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using libraryAPI.Models;
 
-namespace libraryAPI.Models
+namespace libraryAPI.Entities
 {
     public class LibraryDbContext : DbContext
     {
@@ -17,5 +16,7 @@ namespace libraryAPI.Models
         public DbSet<Book> Books { get; set; }
 
         public DbSet<libraryAPI.Entities.User> User { get; set; }
+
+        public DbSet<Author> Authors { get; set; }
     }
 }

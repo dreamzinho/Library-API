@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace libraryAPI.Models
+namespace libraryAPI.DTOs
 {
-    public class Author
+    public class AuthorDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

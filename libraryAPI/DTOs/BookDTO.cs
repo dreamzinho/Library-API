@@ -1,10 +1,11 @@
-﻿using System;
+﻿using libraryAPI.Entities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace libraryAPI.Models
+namespace libraryAPI.DTOs
 {
     public class Book
     {

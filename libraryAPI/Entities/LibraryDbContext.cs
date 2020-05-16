@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using libraryAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace libraryAPI.Entities
+namespace libraryAPI.Models
 {
-    public class LibraryDbContext : DbContext
+    public class LibraryDbContext : IdentityDbContext
     {
         public LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             :base(options)
@@ -16,7 +18,5 @@ namespace libraryAPI.Entities
         public DbSet<Book> Books { get; set; }
 
         public DbSet<libraryAPI.Entities.User> User { get; set; }
-
-        public DbSet<Author> Authors { get; set; }
     }
 }

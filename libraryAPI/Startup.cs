@@ -26,7 +26,9 @@ namespace libraryAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<LibraryDbContext>(opt =>
-               opt.UseInMemoryDatabase("Library"));
+               opt.UseSqlServer(Configuration.GetConnectionString("SqlConnection")));
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<LibraryDbContext>();
             services.AddCors();
             services.AddControllers();
 

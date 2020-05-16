@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using libraryAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace libraryAPI
 {
@@ -61,7 +62,7 @@ namespace libraryAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
         {
             app.UseCors(options => options.AllowAnyOrigin()
             .AllowAnyHeader().AllowAnyMethod());
@@ -80,6 +81,9 @@ namespace libraryAPI
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LibraryAPI-v1"));
+
+            DataSeed.SeedRoles(roleManager); // Add roles
+            DataSeed.SeedAdmin(userManager); // Add one user - admin [login: admin@admin.pl, password: Admin!23]
         }
     }
 }

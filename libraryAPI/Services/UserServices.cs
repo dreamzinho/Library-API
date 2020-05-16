@@ -25,6 +25,8 @@ namespace libraryAPI.Services
             new User { Id = 0, FirstName = "Admin", LastName = "Admin", Username = "admin", Password = "admin123" }
         };
 
+
+
         private readonly AppSettings _appSettings;
 
         public UserService(IOptions<AppSettings> appSettings)

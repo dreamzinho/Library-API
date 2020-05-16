@@ -26,7 +26,6 @@ namespace libraryAPI.Controllers
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
-
             return Ok(user);
         }
 

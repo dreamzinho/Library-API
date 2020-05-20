@@ -11,6 +11,7 @@ using libraryAPI.Helpers;
 using Microsoft.AspNetCore.Identity;
 using libraryAPI.DTOs;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace libraryAPI.Services
 {
@@ -19,16 +20,19 @@ namespace libraryAPI.Services
         Task<User> Authenticate(string username, string password);
         void AddUser(RegisterModelDTO user);
         IEnumerable<User> GetAll();
+
     }
 
     public class UserServices : IUserServices
     {
         private readonly AppSettings _appSettings;
         private readonly UserManager<User> _userManager;
+        private readonly LibraryDbContext _context;
         
 
-        public UserServices(IOptions<AppSettings> appSettings, UserManager<User> userManager)
+        public UserServices(IOptions<AppSettings> appSettings, UserManager<User> userManager, LibraryDbContext context)
         {
+            _context = context;
             _appSettings = appSettings.Value;
             _userManager = userManager;
         }
@@ -83,5 +87,7 @@ namespace libraryAPI.Services
                 _userManager.AddToRoleAsync(user, "User").Wait();
             }
         }
+
+        
     }
 }

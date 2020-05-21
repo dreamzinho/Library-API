@@ -98,14 +98,16 @@ namespace libraryAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, BookDTO book)
         {
             if (id != book.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            var b = _bookServices.EditBook(id, book);
+
+            _context.Entry(b).State = EntityState.Modified;
 
             try
             {
@@ -140,16 +142,11 @@ namespace libraryAPI.Controllers
 
         // DELETE: api/Books/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Book>> DeleteBook(int id)
+        public async Task<ActionResult<BookDTO>> DeleteBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            var book = await _bookServices.RemoveBook(id);
 
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
+            if (book == null) return NotFound();
 
             return book;
         }

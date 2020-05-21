@@ -38,7 +38,10 @@ namespace libraryAPI.Entities
                 .HasForeignKey(ba => ba.AuthorId);
 
 
-
+            modelBuilder.Entity<BookAuthor>()
+                .HasOne<Book>(b => b.Book)
+                .WithMany(c => c.BookAuthors)
+                .Metadata.DeleteBehavior = DeleteBehavior.Cascade;
 
 
 

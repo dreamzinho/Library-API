@@ -21,6 +21,8 @@ namespace libraryAPI.Services
         List<BookDTO> GetAll();
         BookDTO GetOne(int id);
         List<BookDTO> GetFilteredBooks( int[]? authorsIds, string? title, int? year);
+        Book EditBook(int bookId, BookDTO bookDTO);
+        Task<BookDTO> RemoveBook(int bookId);
     }
     public class BookServices : IBookServices
     {
@@ -228,6 +230,67 @@ namespace libraryAPI.Services
             }).ToList();
 
             return borrowedBooks;
+        }
+
+        public Book EditBook(int bookId, BookDTO bookDTO)
+        {
+            var book = _context.Books.Where(b => b.Id == bookId).FirstOrDefault();
+
+            book.IsAvailable = bookDTO.IsAvailable;
+            book.Title = bookDTO.Title;
+            book.WhoTookIt = bookDTO.WhoTookIt;
+            book.Year = bookDTO.Year;
+
+            while(_context.BookAuthor.Any(ba => ba.BookId == book.Id))
+            {
+                var bookAuthor = _context.BookAuthor.Where(ba => ba.BookId == book.Id).FirstOrDefault();
+                _context.BookAuthor.Remove(bookAuthor);
+                _context.SaveChanges();
+            }
+            book.BookAuthors = new List<BookAuthor>();
+            foreach (var author in bookDTO.Authors)
+            {
+                var ba = new BookAuthor
+                {
+                    BookId = book.Id,
+                    AuthorId = author.Id
+                };
+                book.BookAuthors.Add(ba);
+                _context.BookAuthor.Add(ba);
+            }
+
+            _context.SaveChanges();
+            return book;
+
+        }
+
+        public async Task<BookDTO> RemoveBook(int bookId)
+        {
+            var book = await _context.Books.Include(ba => ba.BookAuthors).Where(b => b.Id == bookId).FirstOrDefaultAsync();
+
+            if (book == null) return null;
+
+            var bookDTO = new BookDTO
+            {
+                Id = book.Id,
+                IsAvailable = book.IsAvailable,
+                Title = book.Title,
+                WhoTookIt = book.WhoTookIt,
+                Year = book.Year,
+                Authors = _context.BookAuthor.Include(a => a.Author).Where(ba => ba.BookId == book.Id).Select(a =>
+                        new AuthorDTO
+                        {
+                            Id = a.AuthorId,
+                            Name = a.Author.Name,
+                            Surname = a.Author.Surname
+                        }).ToList()
+            };
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+
+
+            return bookDTO;
         }
     }
 }

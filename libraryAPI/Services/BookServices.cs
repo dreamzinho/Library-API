@@ -118,41 +118,51 @@ namespace libraryAPI.Services
 
         public List<BookDTO> GetFilteredBooks(int[]? authorsIds, string? title, int? year)
         {
-            var filteredBooks = _context.Books.Include(b => b.BookAuthors).AsQueryable();
+            var filteredBooks = _context.Books.Include(b => b.BookAuthors).ToList();
             List<Book> result = filteredBooks.ToList();
 
             if (year != 0) 
             {
-                filteredBooks = filteredBooks.Where(fb => fb.Year == year);
-                result = filteredBooks.ToList();
+                filteredBooks = filteredBooks.Where(fb => fb.Year == year).ToList();
+                result = filteredBooks;
             }
             if (!String.IsNullOrEmpty(title)) 
             {
-                filteredBooks = filteredBooks.Where(fb => fb.Title == title);
-                result = filteredBooks.ToList();
+                filteredBooks = filteredBooks.Where(fb => fb.Title == title).ToList();
+                result = filteredBooks;
             };
             if(authorsIds.Length > 0)
             {
-                //BARDZO NIEOPTYMALNE ale powinno działać, jak masz pomysł na zmiane to śmiało jak coś mi się uda wymyśleć to zmienie ten kod
-                
-                int counter;
-                result = new List<Book>();
-                foreach (Book book in filteredBooks)
-                {
-                    counter = 0;
-                        
-                    for (int i = 0; i < authorsIds.Length; i++)
-                    {
-                        for (int j = 0; j < book.BookAuthors.Count(); j++)
-                        {
-                            if (authorsIds[i] == book.BookAuthors.ToList()[j].AuthorId) counter++;
-                        }
-                    }
-                    if(counter == authorsIds.Length && counter != 0)
-                    {
-                        result.Add(book);
-                    }
-                }
+                //Bardzo nieoptymalne rozwiązanie
+
+                //int counter;
+                //result = new List<Book>();
+                //foreach (Book book in filteredBooks)
+                //{
+                //    counter = 0;
+
+                //    for (int i = 0; i < authorsIds.Length; i++)
+                //    {
+                //        for (int j = 0; j < book.BookAuthors.Count(); j++)
+                //        {
+                //            if (authorsIds[i] == book.BookAuthors.ToList()[j].AuthorId) counter++;
+                //        }
+                //    }
+                //    if(counter == authorsIds.Length && counter != 0)
+                //    {
+                //        result.Add(book);
+                //    }
+                //}
+
+                //Chyba lepsze rozwiązania
+
+                //gdy lista identyfikatorów autorów danej książki jest równa liście podanej jako parametr (są sobie równe)
+                //filteredBooks = filteredBooks.Where(fb => Enumerable.SequenceEqual(fb.BookAuthors.Select(a => a.AuthorId).ToArray(), authorsIds.)).ToList();
+
+                //gdy lista podana jako parametr zawiera się w liście identyfikatorów autorów danej książki (jest podzbiorem)
+                filteredBooks = filteredBooks.Where(fb => authorsIds.All(id => fb.BookAuthors.Select(ba => ba.AuthorId).ToArray().Contains(id))).ToList();
+
+                result = filteredBooks;
             }
 
             var books = result.Select(r =>

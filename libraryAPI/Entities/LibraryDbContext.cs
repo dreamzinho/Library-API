@@ -43,6 +43,11 @@ namespace libraryAPI.Entities
                 .WithMany(c => c.BookAuthors)
                 .Metadata.DeleteBehavior = DeleteBehavior.Cascade;
 
+            modelBuilder.Entity<BookAuthor>()
+               .HasOne<Author>(a => a.Author)
+               .WithMany(c => c.BookAuthors)
+               .Metadata.DeleteBehavior = DeleteBehavior.Cascade;
+
 
 
             base.OnModelCreating(modelBuilder);

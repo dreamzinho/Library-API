@@ -18,64 +18,52 @@ namespace libraryAPI.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly LibraryDbContext _context;
-        private readonly AuthorServices _authorServices;
+        private readonly IAuthorServices _authorServices;
 
-        public AuthorsController(LibraryDbContext context, AuthorServices authorServices)
+        public AuthorsController(LibraryDbContext context, IAuthorServices authorServices)
         {
             _context = context;
             _authorServices = authorServices;
         }
 
         // GET: api/Authors
-        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        public ActionResult<IEnumerable<AuthorDTO>> GetAuthors()
         {
-            return await _context.Authors.ToListAsync();
+            var authors = _authorServices.GetAll();
+
+            if (authors == null) return NotFound();
+
+            return Ok(authors);
         }
 
         // GET: api/Authors/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthor(int id)
+        [HttpGet("{authorId}")]
+        public async Task<ActionResult<AuthorDTO>> GetAuthor(int authorId)
         {
-            var author = await _context.Authors.FindAsync(id);
+            if (authorId <= 0) return BadRequest();
+
+            var author = await _authorServices.GetOne(authorId);
 
             if (author == null)
             {
                 return NotFound();
             }
 
-            return author;
+            return Ok(author);
         }
 
         // PUT: api/Authors/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuthor(int id, Author author)
+        [HttpPut("{authorId}")]
+        public async Task<IActionResult> PutAuthor(int authorId, AuthorDTO authorDTO)
         {
-            if (id != author.Id)
-            {
-                return BadRequest();
-            }
+            if (authorId != authorDTO.Id || authorDTO == null) return BadRequest();
 
-            _context.Entry(author).State = EntityState.Modified;
+            var author = await _authorServices.EditAuthor(authorId, authorDTO);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AuthorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (author == null) return NotFound();
 
             return NoContent();
         }
@@ -84,27 +72,26 @@ namespace libraryAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Author>> PostAuthor(AuthorDTO author)
+        public ActionResult<Author> PostAuthor(AuthorDTO author)
         {
-            var Id = await _authorServices.PostAuthor(author);
+            if (author == null) return BadRequest();
 
-            return CreatedAtAction("GetAuthor", new { id = Id }, author);
+            var Id = _authorServices.PostAuthor(author);
+
+            return CreatedAtAction(nameof(GetAuthor), new { authorId = Id }, author);
         }
 
         // DELETE: api/Authors/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Author>> DeleteAuthor(int id)
+        [HttpDelete("{authorId}")]
+        public async Task<ActionResult<AuthorDTO>> DeleteAuthor(int authorId)
         {
-            var author = await _context.Authors.FindAsync(id);
-            if (author == null)
-            {
-                return NotFound();
-            }
+            if (authorId <= 0) return BadRequest();
 
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
+            var author = await _authorServices.RemoveAuthor(authorId);
 
-            return author;
+            if (author == null) return NotFound();
+
+            return Ok(author);
         }
 
         private bool AuthorExists(int id)

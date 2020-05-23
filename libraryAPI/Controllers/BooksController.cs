@@ -134,8 +134,7 @@ namespace libraryAPI.Controllers
         [HttpPost]
         public ActionResult<Book> PostBook(BookDTO book)
         {
-            if (book == null)
-                return BadRequest();
+            if (book == null) return BadRequest();
             var Id = _bookServices.PostBook(book);
             return CreatedAtAction(nameof(GetBook), new { id = Id }, book);
         }

@@ -7,18 +7,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using libraryAPI.Entities;
 using Microsoft.AspNetCore.Authorization;
+using libraryAPI.Services;
 
 namespace libraryAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BookAuthorsController : ControllerBase
     {
         private readonly LibraryDbContext _context;
+        private readonly IBookAuthorService _bookAuthorService;
 
-        public BookAuthorsController(LibraryDbContext context)
+        public BookAuthorsController(LibraryDbContext context, IBookAuthorService bookAuthorService)
         {
             _context = context;
+            _bookAuthorService = bookAuthorService;
         }
 
         // GET: api/BookAuthors
@@ -30,9 +34,9 @@ namespace libraryAPI.Controllers
 
         // GET: api/BookAuthors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookAuthor>> GetBookAuthor(int id)
+        public async Task<ActionResult<BookAuthor>> GetBookAuthor(int bookId, int authorId)
         {
-            var bookAuthor = await _context.BookAuthor.FindAsync(id);
+            var bookAuthor = await _context.BookAuthor.FindAsync(bookId, authorId);
 
             if (bookAuthor == null)
             {
@@ -46,68 +50,75 @@ namespace libraryAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         //[Authorize(Roles = "Admin")]
-        [HttpPut("{bookId}/{authorId}")]
-        public async Task<IActionResult> PutBookAuthor(int bookId, int authorId, BookAuthor bookAuthor)
-        {
-            if (bookId != bookAuthor.BookId && authorId != bookAuthor.AuthorId)
-            {
-                return BadRequest();
-            }
+        //[HttpPut("{bookId}/{authorId}")]
+        //public async Task<IActionResult> PutBookAuthor(int bookId, int authorId, BookAuthor bookAuthor)
+        //{
+        //    if (bookId != bookAuthor.BookId && authorId != bookAuthor.AuthorId)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(bookAuthor).State = EntityState.Modified;
+        //    _context.Entry(bookAuthor).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookAuthorExists(bookId, authorId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!BookAuthorExists(bookId, authorId))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/BookAuthors
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         //[Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<BookAuthor>> PostBookAuthor(BookAuthor bookAuthor)
+        public ActionResult<bool> AddAuthorToBook([FromQuery(Name = "bookId")]int bookId, [FromQuery(Name = "authorId")] int authorId)
         {
-            _context.BookAuthor.Add(bookAuthor);
-            await _context.SaveChangesAsync();
+            if (bookId <= 0 || authorId <= 0) return BadRequest(false);
 
-            return CreatedAtAction("GetBookAuthor", new { bookId = bookAuthor.BookId, authorId = bookAuthor.AuthorId }, bookAuthor);
+            var book = _context.Books.Find(bookId);
+            var author = _context.Authors.Find(authorId);
+
+            if (book == null || author == null) return NotFound(false);
+
+            var isAdded = _bookAuthorService.AddAuthorToBook(book, author);
+
+            return Ok(isAdded);
+
         }
 
         // DELETE: api/BookAuthors/5
         //[Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<BookAuthor>> DeleteBookAuthor(int id)
-        {
-            var bookAuthor = await _context.BookAuthor.FindAsync(id);
-            if (bookAuthor == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<BookAuthor>> DeleteBookAuthor(int id)
+        //{
+        //    var bookAuthor = await _context.BookAuthor.FindAsync(id);
+        //    if (bookAuthor == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.BookAuthor.Remove(bookAuthor);
-            await _context.SaveChangesAsync();
+        //    _context.BookAuthor.Remove(bookAuthor);
+        //    await _context.SaveChangesAsync();
 
-            return bookAuthor;
-        }
+        //    return bookAuthor;
+        //}
 
-        private bool BookAuthorExists(int bookId, int authorId)
-        {
-            return _context.BookAuthor.Any(e => e.BookId == bookId && e.AuthorId == authorId);
-        }
+        //private bool BookAuthorExists(int bookId, int authorId)
+        //{
+        //    return _context.BookAuthor.Any(e => e.BookId == bookId && e.AuthorId == authorId);
+        //}
     }
 }

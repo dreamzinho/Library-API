@@ -39,7 +39,7 @@ namespace libraryAPI
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IBookServices, BookServices>();
             services.AddScoped<IAuthorServices, AuthorServices>();
-            services.AddScoped<IAuthorServices, AuthorServices>();
+            services.AddScoped<IBookAuthorService, BookAuthorServices>();
 
             services.AddCors();
             services.AddControllers();

@@ -75,7 +75,7 @@ namespace libraryAPI.Controllers
         public ActionResult<Author> PostAuthor(AuthorDTO author)
         {
             if (author == null) return BadRequest();
-
+            if (_context.Authors.Any(a => a.Name == author.Name && a.Surname == author.Surname)) return BadRequest(new { message = "Author already exists" });
             var Id = _authorServices.PostAuthor(author);
 
             return CreatedAtAction(nameof(GetAuthor), new { authorId = Id }, author);

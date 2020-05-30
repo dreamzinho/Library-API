@@ -94,8 +94,10 @@ namespace libraryAPI.Controllers
             if (book == null || author == null) return NotFound(false);
 
             var isAdded = _bookAuthorService.AddAuthorToBook(book, author);
+            if(isAdded) return Ok(isAdded);
+            else return BadRequest(new { message = "This author is already added to that book" });
 
-            return Ok(isAdded);
+
 
         }
 

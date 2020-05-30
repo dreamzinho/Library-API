@@ -135,6 +135,7 @@ namespace libraryAPI.Controllers
         public ActionResult<Book> PostBook(BookDTO book)
         {
             if (book == null) return BadRequest();
+            if (_context.Books.Any(b => b.Title == book.Title)) return BadRequest(new { message = "Book already exists" });
             var Id = _bookServices.PostBook(book);
             return CreatedAtAction(nameof(GetBook), new { id = Id }, book);
         }

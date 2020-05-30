@@ -61,7 +61,8 @@ namespace libraryAPI.Controllers
             var users = _userService.GetAll();
             return Ok(users);
         }
-
+        [AllowAnonymous]
+        [HttpPost("googleRegister")]
         public async Task<IActionResult> ValidateGoogleUser(string tokenId)
         {
             var response = await _userService.ValidateGoogleUser(tokenId);

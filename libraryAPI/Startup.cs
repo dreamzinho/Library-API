@@ -74,7 +74,7 @@ namespace libraryAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<User> userManager, LibraryDbContext _context)
         {
             app.UseCors(options => options.AllowAnyOrigin()
             .AllowAnyHeader().AllowAnyMethod());
@@ -96,6 +96,7 @@ namespace libraryAPI
 
             DataSeed.SeedRoles(roleManager); // Add roles
             DataSeed.SeedAdmin(userManager); // Add one user - admin [login: admin@admin.pl, password: Admin!23]
+            DataSeed.Seed3Books(_context);
         }
     }
 }

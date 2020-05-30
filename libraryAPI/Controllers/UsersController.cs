@@ -6,6 +6,7 @@ using System.Linq;
 using libraryAPI.DTOs;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace libraryAPI.Controllers
 {
@@ -56,6 +57,13 @@ namespace libraryAPI.Controllers
         {
             var users = _userService.GetAll();
             return Ok(users);
+        }
+
+        public async Task<IActionResult> ValidateGoogleUser(string tokenId)
+        {
+            var response = await _userService.ValidateGoogleUser(tokenId);
+            if (response == null) return BadRequest();
+            return Ok(response);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace libraryAPI.Services
     public interface IUserServices
     {
         Task<User> Authenticate(string username, string password);
-        void AddUser(RegisterModelDTO user);
+        IdentityResult AddUser(RegisterModelDTO user);
         IEnumerable<User> GetAll();
         Task<User> ValidateGoogleUser(string TokenId);
 
@@ -74,7 +74,7 @@ namespace libraryAPI.Services
             return _users;
         }
 
-        public void AddUser(RegisterModelDTO registerModelDTO)
+        public IdentityResult AddUser(RegisterModelDTO registerModelDTO)
         {
             var user = new User
             {
@@ -88,6 +88,8 @@ namespace libraryAPI.Services
             {
                 _userManager.AddToRoleAsync(user, "User").Wait();
             }
+
+            return result;
         }
 
         public async Task<User> ValidateGoogleUser(string TokenId)

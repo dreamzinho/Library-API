@@ -46,12 +46,15 @@ namespace libraryAPI.Controllers
             if (model.UserName == null || model.Email == null || model.Password == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
-            _userService.AddUser(model);
-            
+            var isAdded = _userService.AddUser(model);
+
+            if (!isAdded.Succeeded) return BadRequest(new { message = "Invalid Username or Password" });
+
             return Ok();
         }
 
         //[Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
         {

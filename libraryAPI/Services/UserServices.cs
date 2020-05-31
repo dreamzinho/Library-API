@@ -22,6 +22,7 @@ namespace libraryAPI.Services
         IdentityResult AddUser(RegisterModelDTO user);
         IEnumerable<User> GetAll();
         Task<User> ValidateGoogleUser(string TokenId);
+        Task<(IdentityUser,bool)> RemoveUser(string userId);
 
     }
 
@@ -90,6 +91,19 @@ namespace libraryAPI.Services
             }
 
             return result;
+        }
+
+        public async Task<(IdentityUser,bool)> RemoveUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null) return (null, false);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded) return (user, false);
+
+            return (user, true);
         }
 
         public async Task<User> ValidateGoogleUser(string TokenId)

@@ -96,7 +96,9 @@ namespace libraryAPI
 
             DataSeed.SeedRoles(roleManager); // Add roles
             DataSeed.SeedAdmin(userManager); // Add one user - admin [login: admin@admin.pl, password: Admin!23]
-            DataSeed.Seed3Books(_context);
+            DataSeed.SeedBooks(_context);
+            DataSeed.SeedAuthors(_context);
+            DataSeed.SeedBookAuthor(_context);
         }
     }
 }

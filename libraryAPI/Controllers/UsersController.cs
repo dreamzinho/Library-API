@@ -53,6 +53,20 @@ namespace libraryAPI.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        [AllowAnonymous]
+        public IActionResult RemoveUser([FromQuery(Name = "userId")] string userId)
+        {
+            if (userId == null) return BadRequest();
+
+
+            var result = _userService.RemoveUser(userId);
+             
+            if (result.Result.Item1 == null) return NotFound();
+
+            return Ok(result.Result.Item2);
+        }
+
         //[Authorize(Roles = "Admin")]
         [AllowAnonymous]
         [HttpGet]

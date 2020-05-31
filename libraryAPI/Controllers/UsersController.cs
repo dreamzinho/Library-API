@@ -62,7 +62,7 @@ namespace libraryAPI.Controllers
             return Ok(users);
         }
         [AllowAnonymous]
-        [HttpPost("googleRegister")]
+        [HttpGet("googleRegister")]
         public async Task<IActionResult> ValidateGoogleUser(string tokenId)
         {
             var response = await _userService.ValidateGoogleUser(tokenId);

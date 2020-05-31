@@ -94,8 +94,11 @@ namespace libraryAPI.Services
 
         public async Task<User> ValidateGoogleUser(string TokenId)
         {
+            var CLIENT_ID = "393357815889-jl0jci0rs1ghjvq94lcbgl1rfms0cruv.apps.googleusercontent.com";
             GoogleJsonWebSignature.Payload googleToken = null;
-            try { googleToken = await GoogleJsonWebSignature.ValidateAsync(TokenId); }
+            var settings = new GoogleJsonWebSignature.ValidationSettings() { Audience = new List<string>() { CLIENT_ID } };
+
+            try { googleToken = await GoogleJsonWebSignature.ValidateAsync(TokenId, settings); }
             catch { return null; }
             
             var user = await _userManager.FindByNameAsync(googleToken.Email);
